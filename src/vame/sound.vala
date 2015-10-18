@@ -22,7 +22,7 @@ namespace Vame {
 
         public signal void end();
 
-        private dynamic Gst.Element playbin;
+        public dynamic Gst.Element? playbin = null;
 
         public string path;
         public bool repeat { get; set; default = false; }
@@ -38,14 +38,6 @@ namespace Vame {
 
         private bool bus_callback(Gst.Bus bus, Gst.Message message) {
             switch (message.type) {
-                case Gst.MessageType.ERROR:
-                    GLib.Error err;
-                    string debug;
-
-                    message.parse_error(out err, out debug);
-                    print("Error: %s\n", err.message);
-                    break;
-
                 case Gst.MessageType.EOS:
                     if (this.repeat) {
                         this.play();
@@ -53,33 +45,28 @@ namespace Vame {
                         this.end();
                     }
                     break;
-
-                case Gst.MessageType.STATE_CHANGED:
-                    //Gst.State oldstate;
-                    //Gst.State newstate;
-                    //Gst.State pending;
-                    //message.parse_state_changed(out oldstate, out newstate, out pending);
-                    break;
-
-                case Gst.MessageType.TAG:
-                    break;
             }
 
             return true;
         }
 
         public void play() {
+            if (this.playbin != null) {
+                this.playbin.set_state(Gst.State.NULL);
+            }
+
             this.playbin = Gst.ElementFactory.make("playbin", "play");
             this.playbin.uri = this.path;
 
             Gst.Bus bus = this.playbin.get_bus();
-            bus.add_watch(bus_callback);
+            bus.add_watch(this.bus_callback);
 
             this.playbin.set_state(Gst.State.PLAYING);
         }
 
         public void stop() {
-            this.playbin.set_state(Gst.State.PAUSED);
+            this.repeat = false;
+            this.playbin.set_state(Gst.State.NULL);
         }
     }
 
@@ -106,6 +93,7 @@ namespace Vame {
             }
 
             this.music = music;
+            this.music.repeat = true;
             this.music.play();
         }
     }
