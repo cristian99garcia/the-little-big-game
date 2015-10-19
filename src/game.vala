@@ -28,6 +28,7 @@ public class Window: Gtk.Window {
     public Gtk.Box box;
 
     public Utils.Mode mode;
+    public Utils.Song song;
     public bool game_maked = false;
 
     public Window() {
@@ -107,6 +108,7 @@ public class Window: Gtk.Window {
                 this.roulette.show(this.area);
                 this.turn_button.show(this.area);
                 this.roulette.rotation = 0;
+                this.play_song(Utils.Song.NULL);
                 break;
 
             case Utils.Mode.RESPONSES:
@@ -126,9 +128,35 @@ public class Window: Gtk.Window {
         this.set_mode(Utils.Mode.ROULETTE);
     }
 
-    private void realize_cb(Gtk.Widget self) {
+    public void play_song(Utils.Song song) {
+        this.song = song;
+
         Vame.SoundManager manager = this.area.get_sound_manager();
-        manager.set_music(Utils.make_sound("menu.mp3"));
+        Vame.Sound? sound = null;
+
+        switch (this.song) {
+            case Utils.Song.MENU:
+                sound = Utils.make_sound("menu.mp3");
+                break;
+
+            case Utils.Song.QUESTION:
+                int num = (int)GLib.Random.int_range(1, 2);
+                sound = Utils.make_sound("chronometer0" + num.to_string() + ".mp3");
+                break;
+
+            case Utils.Song.NULL:
+                break;
+        }
+
+        if (sound != null) {
+            manager.set_music(sound);
+        } else {
+            manager.stop_music();
+        }
+    }
+
+    private void realize_cb(Gtk.Widget self) {
+        this.play_song(Utils.Song.MENU);
     }
 
     private void destroy_cb(Gtk.Widget self) {

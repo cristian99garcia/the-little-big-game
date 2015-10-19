@@ -24,7 +24,7 @@ namespace Game {
         public bool rotating = false;
 
         public Roulette() {
-            base(new Vame.Image("/home/cristian/Documentos/question-game/src/images/roulette.png"));
+            base(Utils.make_image("roulette.png"));
         }
 
         public void show(Vame.GameArea area) {

@@ -96,5 +96,10 @@ namespace Vame {
             this.music.repeat = true;
             this.music.play();
         }
+
+        public void stop_music() {
+            this.music.stop();
+            this.music = null;
+        }
     }
 }

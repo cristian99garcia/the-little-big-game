@@ -32,6 +32,12 @@ namespace Utils {
         RESPONSES,
     }
 
+    public enum Song {
+        MENU,
+        QUESTION,
+        NULL,
+    }
+
     public Vame.Image make_image(string name) {
         string path = GLib.Path.build_filename(Path.get_instance().LOCAL_PATH, @"src/images/$name");
         return new Vame.Image(path);

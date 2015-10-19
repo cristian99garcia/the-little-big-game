@@ -98,15 +98,19 @@ namespace Game {
 
         public void set_players(int players) {
             this.players = players;
-            this.next_players = new GLib.Array<int>();  //  Remove old data
+            if (this.players > 1) {
+                this.next_players = new GLib.Array<int>();  //  Remove old data
 
-            for (int i=1; i <= this.players; i++) {
-                this.next_players.append_val(i);
+                for (int i=1; i <= this.players; i++) {
+                    this.next_players.append_val(i);
+                }
+            } else {
+                this.play_button.sensitive = true;
             }
         }
 
         public void select_player() {
-            if (!this.selecting) {
+            if (!this.selecting && this.players > 1) {
                 this.start_button.sensitive = false;
                 this.play_button.sensitive = false;
                 this.selected = null;
